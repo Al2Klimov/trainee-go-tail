@@ -10,10 +10,38 @@ import (
 	"os"
 )
 
+var linesParameter = flag.Int("n", 10, "specify how many last lines should be printed.")
+
 func main() {
-	linesParameter := flag.Int("n", 10, "specify how many last lines should be printed.")
 	flag.Parse()
-	buf := bufio.NewReader(os.Stdin)
+
+	if len(flag.Args()) > 0 {
+		for filePOS, fileName := range flag.Args() {
+			file, fileErr := os.Open(fileName)
+			if fileErr != nil {
+				fmt.Fprintln(os.Stderr, fileErr)
+				os.Exit(1)
+			}
+
+			printTailedFile(file)
+
+			if filePOS != len(flag.Args())-1 {
+				fmt.Print("\n")
+			}
+
+			file.Close()
+		}
+	} else {
+		printTailedFile(os.Stdin)
+	}
+}
+
+func printTailedFile(file *os.File) {
+	if len(flag.Args()) > 1 {
+		fmt.Printf("==> %s <==\n", file.Name())
+	}
+
+	buf := bufio.NewReader(file)
 	var allData [][]byte
 
 	for {
