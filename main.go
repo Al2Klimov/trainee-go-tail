@@ -4,12 +4,15 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"os"
 )
 
 func main() {
+	linesParameter := flag.Int("n", 10, "specify how many last lines should be printed.")
+	flag.Parse()
 	buf := bufio.NewReader(os.Stdin)
 	var allData [][]byte
 
@@ -21,7 +24,7 @@ func main() {
 		}
 		allData = append(allData, data)
 
-		if len(allData) > 10 && len(data) != 0 {
+		if len(allData) > *linesParameter && len(data) != 0 {
 			allData = allData[1:]
 		}
 
